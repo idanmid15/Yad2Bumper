@@ -16,15 +16,17 @@ object Bumper {
     browser.findElementById(htmlConfig.passwordHtmlId).sendKeys(userConfig.password)
     browser.findElementById(htmlConfig.submitHtmlId).click()
 
-    browser.get(appConfig.itemsUrl)
+    // Find all item categories such as: real-estate, etc..
+    browser.findElementsByClassName("nav-link").asScala.foreach(itemCategory => {
+      browser.get(itemCategory.getAttribute("href"))
 
-    // Find all iframes in the list of items
-    browser.findElementsByCssSelector("tr[data-frame]").asScala.foreach(dataFrame => {
+      // Find all iframes in the list of items
+      browser.findElementsByCssSelector("tr[data-frame]").asScala.foreach(dataFrame => {
         val iFrameUrl = dataFrame.getAttribute("data-frame")
         browser.get(transportProtocol + iFrameUrl)
-        //browser.waitAtMost(5).secondsFor(browser.find(htmlConfig.bumpHtmlId).nonEmpty).toBecomeTrue()
         browser.findElementById(htmlConfig.bumpHtmlId).click()
       })
+    })
     browser.close()
   }
 }
